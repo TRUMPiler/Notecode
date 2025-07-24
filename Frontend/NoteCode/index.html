@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon"  href="/NoteCode.gif" type="image/gif"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NoteCode</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+  <script>// Function to set theme based on system preference
+function applySystemTheme() {
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    // Access the HTML element
+    const htmlElement = document.documentElement;
+
+    // Apply the theme
+    if (prefersDark) {
+        htmlElement.classList.add('dark');
+        htmlElement.classList.remove('white');
+    } else {
+        htmlElement.classList.add('white');
+        htmlElement.classList.remove('dark');
+    }
+}
+
+// Set the initial theme
+applySystemTheme();
+
+// Listen for changes in the system theme
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', applySystemTheme);
+</script>
+</html>

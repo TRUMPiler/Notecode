@@ -1,0 +1,6 @@
+{
+    "discord.enabled": true,
+    "tailwindCSS.experimental.classRegex": [
+  "class:\\s*?[\"'`]([^\"'`]*).*?,"
+]
+}
