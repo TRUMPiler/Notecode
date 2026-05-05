@@ -1,0 +1,60 @@
+.custom-editor-root{border:1px solid #e5e7eb;border-radius:6px;padding:8px; border-width:1px 1px 1px 4px;border-color:#000000 #07080a #000000 #000000}
+.custom-editor-toolbar{display:flex;gap:8px;margin-bottom:8px}
+.custom-editor-toolbar button{background:#f3f4f6;border:1px solid #e5e7eb;padding:6px 8px;border-radius:4px;cursor:pointer}
+.custom-editor-content{min-height:200px;padding:8px}
+.file-label{background:#3b82f6;color:white;padding:6px 8px;border-radius:4px;cursor:pointer}
+
+/* Code block styling */
+.custom-editor-content pre {
+	background: #0b0b0b; /* solid black background */
+	color: #e6eef8;
+	padding: 12px 16px;
+	border-radius: 8px;
+	overflow-x: auto;
+	overflow-y: visible; /* allow vertical expansion */
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+	font-size: 0.95rem;
+	box-shadow: 0 1px 0 rgba(0,0,0,0.04) inset;
+}
+
+/* Styles for the node view textarea */
+.code-block-node { margin: 0 0 1rem 0; }
+.code-block-textarea { width: 100%; min-height: 120px; border-radius: 8px; padding: 12px; background: #0b0b0b; color: #e6eef8; border: 1px solid #111; font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", monospace; }
+.code-block-node .code-highlighter { margin: 0; }
+
+.custom-editor-content code {
+	background: rgba(8, 1, 1, 0.726);
+    color: #e6eef8;
+	padding: 2px 6px;
+	border-radius: 4px;
+	font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, "Roboto Mono", "Courier New", monospace;
+}
+
+/* Make sure pre elements inside the editor respect the container width */
+.custom-editor-content .ProseMirror pre {
+	white-space: pre;
+	margin: 0 0 1rem 0;
+}
+
+/* Custom blinking caret */
+.custom-editor-content .ProseMirror {
+	caret-color: #10b981; /* green-ish caret */
+	outline: none;
+	-webkit-text-size-adjust: 100%;
+	/* Animate caret-color to simulate blinking (may vary by browser) */
+	animation: caret-blink 1s steps(1) infinite;
+}
+
+@keyframes caret-blink {
+	50% {
+		caret-color: transparent;
+	}
+	100% {
+		caret-color: #10b981;
+	}
+}
+
+/* Fallback: slightly more visible caret on focused paragraphs */
+.custom-editor-content .ProseMirror:focus {
+	caret-color: #10b981;
+}

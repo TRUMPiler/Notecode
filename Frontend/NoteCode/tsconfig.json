@@ -1,14 +1,13 @@
 {
   "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ],
-  "compilerOptions": {
+   "compilerOptions": {
     "baseUrl": ".",
-    "allowSyntheticDefaultImports": true,
     "paths": {
       "@/*": ["./src/*"]
     }
-  }
+  },
+  "references": [
+    { "path": "./tsconfig.app.json" },
+    { "path": "./tsconfig.node.json" }
+  ]
 }
