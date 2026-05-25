@@ -1,3 +1,11 @@
-@import './styles/_variables.scss';
-@import './styles/_keyframe-animations.scss';
+@import "tailwindcss";
 
+/* @theme {
+  --duration-300: 300ms;
+  --duration-500: 500ms;
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@import './styles/_variables.scss';
+@import './styles/_keyframe-animations.scss'; */

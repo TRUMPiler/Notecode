@@ -11,6 +11,8 @@ interface CodeBlockToolbarProps {
   showLineNumbers: boolean
   onLanguageChange: (language: string) => void
   onToggleLineNumbers: () => void
+  onRun?: () => void
+  isRunning?: boolean
 }
 
 const CodeBlockToolbar: React.FC<CodeBlockToolbarProps> = ({
@@ -19,6 +21,8 @@ const CodeBlockToolbar: React.FC<CodeBlockToolbarProps> = ({
   showLineNumbers,
   onLanguageChange,
   onToggleLineNumbers,
+  onRun,
+  isRunning,
 }) => {
   const [copied, setCopied] = useState(false)
 
@@ -47,6 +51,17 @@ const CodeBlockToolbar: React.FC<CodeBlockToolbarProps> = ({
       </select>
 
       <div className="code-block-toolbar-actions">
+        {(language === 'python' || language === 'java') && (
+          <button
+            className={`code-block-button code-block-run ${isRunning ? 'running' : ''}`}
+            onClick={onRun}
+            title="Run code (Python / Java)"
+            aria-label="Run code"
+            disabled={isRunning}
+          >
+            {isRunning ? 'Running...' : 'Run'}
+          </button>
+        )}
         <button
           className="code-block-button"
           onClick={onToggleLineNumbers}
