@@ -6,6 +6,7 @@ export interface IUser extends Document {
   password: string
   createdAt: Date
   updatedAt: Date
+  profilePictureUrl?: string
 }
 
 const UserSchema: Schema = new Schema(
@@ -13,9 +14,10 @@ const UserSchema: Schema = new Schema(
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true, index: true },
     password: { type: String, required: true },
+    profilePictureUrl: { type: String },
   },
   { timestamps: true }
 )
 
-const UserModel = mongoose.models.User || mongoose.model<IUser>('User', UserSchema)
+const UserModel = (mongoose.models.User as mongoose.Model<IUser>) || mongoose.model<IUser>('User', UserSchema)
 export default UserModel

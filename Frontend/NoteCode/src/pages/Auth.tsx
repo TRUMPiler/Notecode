@@ -17,7 +17,7 @@ interface SignupFormData {
 
 export default function Auth() {
   const navigate = useNavigate()
-  const { setUser } = useAuth()
+  const { setUser, logout } = useAuth()
   const [isLogin, setIsLogin] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -72,8 +72,9 @@ export default function Auth() {
         setUser(userData)
         localStorage.setItem('user', JSON.stringify(userData))
         console.log('Login successful:', data)
-        // Redirect to home after a short delay
-        setTimeout(() => navigate('/'), 1000)
+        // Redirect to editor if there is a draft, otherwise home
+        const hasDraft = localStorage.getItem('draftNote')
+        setTimeout(() => navigate(hasDraft ? '/editor' : '/'), 1000)
       } else {
         setError(data.error || data.message || 'Login failed')
       }
@@ -127,7 +128,8 @@ export default function Auth() {
           setUser(userData)
           localStorage.setItem('user', JSON.stringify(userData))
           setSignupForm({ name: '', email: '', password: '', confirmPassword: '' })
-          setTimeout(() => navigate('/'), 1500)
+          const hasDraft = localStorage.getItem('draftNote')
+          setTimeout(() => navigate(hasDraft ? '/editor' : '/'), 1500)
         } else {
           setSuccess('Signup successful! Please login.')
           setSignupForm({ name: '', email: '', password: '', confirmPassword: '' })
@@ -144,24 +146,15 @@ export default function Auth() {
     }
   }
 
-  const refreshTemp = async () => {
-    try {
-      await fetch(`${BACKEND_URL}/user/refresh`, { method: 'POST', credentials: 'include' })
-    } catch (err) {
-      console.warn('refresh failed', err)
-    }
-  }
-
   const handleLogout = async () => {
     setLoading(true)
     try {
-      await fetch(`${BACKEND_URL}/user/logout`, { method: 'POST', credentials: 'include' })
+      await logout()
       setSuccess('')
       setError('')
       setLoginForm({ email: '', password: '' })
       setSignupForm({ name: '', email: '', password: '', confirmPassword: '' })
       setUser(null)
-      localStorage.removeItem('user')
       navigate('/')
     } catch (err) {
       setError('Logout failed')
@@ -169,12 +162,7 @@ export default function Auth() {
       setLoading(false)
     }
   }
-
-  useEffect(() => {
-    refreshTemp()
-    const id = setInterval(() => refreshTemp(), 14 * 60 * 1000)
-    return () => clearInterval(id)
-  }, [])
+  
 
   return (
     <div className="auth-container">

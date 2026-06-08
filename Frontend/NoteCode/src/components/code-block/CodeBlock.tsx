@@ -13,6 +13,7 @@ interface CodeBlockProps {
   code?: string
   onUpdate: (code: string, language?: string) => void
   onExit?: () => void
+  onRemove?: () => void
 }
 
 const CodeBlock: React.FC<CodeBlockProps> = ({
@@ -21,6 +22,7 @@ const CodeBlock: React.FC<CodeBlockProps> = ({
   code = "",
   onUpdate,
   onExit,
+  onRemove,
 }) => {
   const [isEditing, setIsEditing] = useState(code === "")
   const [content, setContent] = useState(code)
@@ -182,7 +184,7 @@ const CodeBlock: React.FC<CodeBlockProps> = ({
   }, [isEditing])
 
   return (
-    <NodeViewWrapper className="code-block" data-language={currentLanguage} data-id={id}>
+    <NodeViewWrapper className="code-block" data-language={currentLanguage} data-id={id} contentEditable={false}>
       <CodeBlockToolbar
         language={currentLanguage}
         code={content}
@@ -191,6 +193,7 @@ const CodeBlock: React.FC<CodeBlockProps> = ({
         onToggleLineNumbers={handleToggleLineNumbers}
         onRun={handleRun}
         isRunning={isRunning}
+        onRemove={onRemove}
       />
 
       {isEditing ? (

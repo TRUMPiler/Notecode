@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+@import "primereact/resources/themes/lara-light-cyan/theme.css";
+
+
+
+
 /* @theme {
   --duration-300: 300ms;
   --duration-500: 500ms;

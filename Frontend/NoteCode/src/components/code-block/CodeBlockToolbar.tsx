@@ -13,6 +13,7 @@ interface CodeBlockToolbarProps {
   onToggleLineNumbers: () => void
   onRun?: () => void
   isRunning?: boolean
+  onRemove?: () => void
 }
 
 const CodeBlockToolbar: React.FC<CodeBlockToolbarProps> = ({
@@ -23,6 +24,7 @@ const CodeBlockToolbar: React.FC<CodeBlockToolbarProps> = ({
   onToggleLineNumbers,
   onRun,
   isRunning,
+  onRemove,
 }) => {
   const [copied, setCopied] = useState(false)
 
@@ -35,12 +37,14 @@ const CodeBlockToolbar: React.FC<CodeBlockToolbarProps> = ({
   }
 
   return (
-    <div className="code-block-toolbar">
+    <div className="code-block-toolbar" contentEditable={false}>
       <select
         className="code-block-language-select"
         value={language}
         onChange={(e) => onLanguageChange(e.target.value)}
         aria-label="Select programming language"
+        onMouseDown={(e) => e.stopPropagation()}
+        contentEditable={false}
       >
         <option value="plaintext">Plain Text</option>
         {SUPPORTED_LANGUAGES.map((lang) => (
@@ -51,34 +55,56 @@ const CodeBlockToolbar: React.FC<CodeBlockToolbarProps> = ({
       </select>
 
       <div className="code-block-toolbar-actions">
-        {(language === 'python' || language === 'java') && (
+        {(language === 'python' || language === 'java' || language === 'javascript' || language === 'c') && (
           <button
+            type="button"
             className={`code-block-button code-block-run ${isRunning ? 'running' : ''}`}
+            onMouseDown={(e) => e.preventDefault()}
             onClick={onRun}
-            title="Run code (Python / Java)"
+            title="Run code (Python / Java / JavaScript / C)"
             aria-label="Run code"
             disabled={isRunning}
+            contentEditable={false}
           >
             {isRunning ? 'Running...' : 'Run'}
           </button>
         )}
         <button
+          type="button"
           className="code-block-button"
+          onMouseDown={(e) => e.preventDefault()}
           onClick={onToggleLineNumbers}
           title={showLineNumbers ? "Hide line numbers" : "Show line numbers"}
           aria-pressed={showLineNumbers}
+          contentEditable={false}
         >
           {showLineNumbers ? "123" : "№"}
         </button>
 
         <button
+          type="button"
           className="code-block-button"
+          onMouseDown={(e) => e.preventDefault()}
           onClick={handleCopy}
           title="Copy code to clipboard"
           aria-label="Copy code"
+          contentEditable={false}
         >
           {copied ? "✓ Copied" : "Copy"}
         </button>
+        {onRemove && (
+          <button
+            type="button"
+            className="code-block-button"
+            onMouseDown={(e) => e.preventDefault()}
+            onClick={onRemove}
+            title="Remove code block"
+            aria-label="Remove code block"
+            contentEditable={false}
+          >
+            Delete
+          </button>
+        )}
       </div>
     </div>
   )

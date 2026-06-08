@@ -4,6 +4,7 @@ import { User } from '../models/User'
 import UserModel, { IUser } from '../models/userModel'
 import { signTemp, signRefresh, verifyToken } from '../utils/jwt'
 import bcrypt from 'bcrypt'
+import * as userService from '../services/userService'
 
 const cookieOptions = (maxAgeMs: number) => ({
   httpOnly: true,
@@ -21,12 +22,8 @@ export const login = async (req: Request, res: Response) => {
       return ApiResponse.error(res, 'Email and password required', 400)
     }
 
-    // Find user by email
-    const user = await UserModel.findOne({ email: email as string } as any)
-    if (!user) return ApiResponse.error(res, 'Invalid credentials', 401)
-
-    const match = await bcrypt.compare(password, user.password)
-    if (!match) return ApiResponse.error(res, 'Invalid credentials', 401)
+    // Authenticate via service
+    const user = await userService.authenticateUser(email as string, password as string)
 
     const refreshToken = signRefresh({ email })
     const tempToken = signTemp({ email })
@@ -36,8 +33,9 @@ export const login = async (req: Request, res: Response) => {
     res.cookie('temp_jwt', tempToken, cookieOptions(15 * 60 * 1000))
 
     return ApiResponse.success(res, { user: { email: user.email, name: user.name, id: user._id } }, 'Login successful', 200)
-  } catch (err) {
+  } catch (err: any) {
     console.error('login error', err)
+    if (err?.status) return ApiResponse.error(res, err.message || 'Error', err.status, err.details)
     return ApiResponse.error(res, 'Server error', 500)
   }
 }
@@ -50,14 +48,8 @@ export const register = async (req: Request, res: Response) => {
       return ApiResponse.error(res, 'Name, email and password required', 400)
     }
 
-    // Check if user already exists
-    const existing = await UserModel.findOne({ email: email as string } as any)
-    if (existing) return ApiResponse.error(res, 'User already exists', 409)
-
-    const saltRounds = Number(process.env.BCRYPT_SALT_ROUNDS || 10)
-    const hashed = await bcrypt.hash(password, saltRounds)
-
-    const created = await UserModel.create({ name, email, password: hashed })
+    // Register via service
+    const created = await userService.registerUser({ name: name as string, email: email as string, password: password as string })
 
     const refreshToken = signRefresh({ email })
     const tempToken = signTemp({ email })
@@ -65,8 +57,9 @@ export const register = async (req: Request, res: Response) => {
     res.cookie('temp_jwt', tempToken, cookieOptions(15 * 60 * 1000))
 
     return ApiResponse.success(res, { user: { id: created._id, name: created.name, email: created.email } }, 'Registered', 201)
-  } catch (err) {
+  } catch (err: any) {
     console.error('register error', err)
+    if (err?.status) return ApiResponse.error(res, err.message || 'Error', err.status, err.details)
     return ApiResponse.error(res, 'Server error', 500)
   }
 }
@@ -89,4 +82,3 @@ export const logout = (_req: Request, res: Response) => {
   res.clearCookie('refresh_token', { path: '/' })
   return ApiResponse.success(res, null, 'Logged out', 200)
 }
-

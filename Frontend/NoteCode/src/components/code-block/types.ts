@@ -31,6 +31,8 @@ export const SUPPORTED_LANGUAGES = [
   "ruby",
   "php",
   "java",
+  "c",
+  "c++",
   "csharp",
   "go",
   "rust",

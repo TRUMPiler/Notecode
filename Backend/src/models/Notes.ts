@@ -3,7 +3,7 @@ import mongoose, { Document, Schema } from 'mongoose'
 export interface INote extends Document {
   title: string
   content: string
-  owner: mongoose.Types.ObjectId
+  private: boolean
   createdAt: Date
   updatedAt: Date
 }
@@ -12,10 +12,10 @@ const NoteSchema: Schema = new Schema(
   {
     title: { type: String, required: true },
     content: { type: String, required: true },
-    owner: { type: Schema.Types.ObjectId, ref: 'User', required: true },
-    },
-    { timestamps: true }
+    private: { type: Boolean, default: true },
+  },
+  { timestamps: true }
 )
 
-const NoteModel = mongoose.models.Note || mongoose.model<INote>('Note', NoteSchema)
-export default NoteModel
+const NoteModel = (mongoose.models.Note as mongoose.Model<INote>) || mongoose.model<INote>('Note', NoteSchema)
+export default NoteModel;
