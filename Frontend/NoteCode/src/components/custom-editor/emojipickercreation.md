@@ -1,7 +1,7 @@
-# NoteCode — Emoji Picker Feature Prompt
+# NoteCenter — Emoji Picker Feature Prompt
 
 ## Context
-I am building **NoteCode**, a rich-text note-taking app for developers and students. The editor is built with **TipTap** (React). I need you to build a fully working emoji picker feature that integrates into the editor via TipTap's FloatingMenu extension.
+I am building **NoteCenter**, a rich-text note-taking app for developers and students. The editor is built with **TipTap** (React). I need you to build a fully working emoji picker feature that integrates into the editor via TipTap's FloatingMenu extension.
 
 ---
 
@@ -47,7 +47,7 @@ The picker is a custom-built React component (not emoji-mart's built-in UI). It 
 **Recents row**
 - Shown at the bottom of the picker above the preview bar
 - Displays the last 8 used emojis
-- Persisted to `localStorage` under the key `notecode:emoji_recents`
+- Persisted to `localStorage` under the key `NoteCenter:emoji_recents`
 - Updated every time an emoji is selected
 
 ### 3. Inserting into the editor

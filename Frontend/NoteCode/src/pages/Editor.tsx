@@ -7,16 +7,20 @@ import { InputText } from 'primereact/inputtext'
 
 import '../styles/titlebar.scss'
 import { InputSwitch } from 'primereact/inputswitch';
-import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { createNote } from '../services/notesApi';
-import {Toast} from 'primereact/toast';
+import { Toast } from 'primereact/toast';
+import React from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import type { AppDispatch, RootState } from './store';
+import { fetchNotesTitles } from './notesSlice';
 
 
-const Tiptap = () => {
+const Tiptap = React.memo(() => {
   
-  const { isLoggedIn } = useAuth();
   const navigate = useNavigate();
+  const dispatch = useDispatch<AppDispatch>();
+  const { user, isLoggedIn } = useSelector((state: RootState) => state.auth);
   const toastref=useRef<Toast|null>(null);
   const [text, setTextState] = useState<string | null>(null);
   const [title, setTitle] = useState<string>('')
@@ -44,7 +48,7 @@ const Tiptap = () => {
   }, []);
 
   const onSubmitHandler = async () => {
-    if (!title || !text) {
+    if (!title || !text||title.trim() === '' || text.trim() === '') {
       toastref.current?.show({severity:'warn', summary:'Content Required', detail:'Title and content cannot be empty.', life:3000});
       console.log("Title or content is empty. Submission aborted.");
       return
@@ -63,6 +67,9 @@ const Tiptap = () => {
     try {
       await createNote({ title, content: text, private: privatee });
       toastref.current?.show({severity:'success', summary:'Note Saved', detail:'Your note has been saved successfully.', life:3000});
+      if (user?.email) {
+        dispatch(fetchNotesTitles(user.email));
+      }
     } catch (error) {
       console.error('Failed to save note:', error);
       toastref.current?.show({severity:'error', summary:'Save Failed', detail:'Failed to save note. Please try again.', life:3000});
@@ -102,14 +109,14 @@ const Tiptap = () => {
           
         />
       </div>
-      <div>
+      {/* <div>
         <h2 className='text-2xl font-bold mt-8 mb-4'>Output:</h2>
         <div className='bg-gray-100 p-4 rounded-lg shadow-md'>
           <pre className='whitespace-pre-wrap wrap-break-word'>{text}</pre>
         </div>
-      </div>    
+      </div>     */}
     </div>
   )
-}
+})
 
 export default Tiptap

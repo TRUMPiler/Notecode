@@ -30,3 +30,10 @@ export const deleteNote = async (id: string) => {
   const response = await api.delete(`/notes/${id}`)
   return response.data
 }
+
+export const getNotesTitles = async (email: string) => {
+  const response = await api.get('/notes/titles', {
+    params: { email },
+  })
+  return response.data
+}

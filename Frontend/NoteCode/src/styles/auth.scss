@@ -5,7 +5,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #fefefe 0%, #9e6a08 100%);
+  background: linear-gradient(135deg, #fefefe 0%, #e783d7 100%);
   position: relative;
   overflow: hidden;
 
@@ -109,7 +109,7 @@
     font-weight: 700;
     color: #333;
     margin: 0 0 8px 0;
-    background: linear-gradient(135deg, #6f5925 0%, #d55f0b 100%);
+    background: linear-gradient(135deg, #ffffff 0%, #ce0bd5 100%);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
@@ -235,7 +235,7 @@
 .auth-button {
   width: 100%;
   padding: 14px 20px;
-  background: linear-gradient(135deg, #e95207 0%, #cf891f 100%);
+  background: linear-gradient(135deg, #f0a2f3 0%, #cc0fcc 100%);
   color: white;
   border: none;
   border-radius: 10px;

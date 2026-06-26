@@ -20,8 +20,9 @@ import python from "highlight.js/lib/languages/python"
 import cssLang from "highlight.js/lib/languages/css"
 import html from "highlight.js/lib/languages/xml"
 import { Placeholder } from "@tiptap/extensions"
-
-// import { Button } from "primereact/button"
+import { Dialog } from "primereact/dialog"
+import { InputText } from "primereact/inputtext"
+import { Button } from "primereact/button"
 
 type Props = {
   // initialContent?: string
@@ -92,9 +93,9 @@ export default function CustomEditor({ text, providerValue, setText}: Props) {
   })
 
   const editor = providerValue?.editor ?? internalEditor
-
-  const BACKEND = (import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000').replace(/\/$/, '')
-
+  // editor.setEditable(false);
+  const BACKEND = (import.meta.env.VITE_BACKEND_URL || 'http://localhost:6066').replace(/\/$/, '')
+  
   const uploadFile = async (file?: File) => {
     if (!file) return null
     try {
@@ -171,14 +172,21 @@ export default function CustomEditor({ text, providerValue, setText}: Props) {
   const [uploading, setUploading] = useState(false)
   const [progress, setProgress] = useState(0)
   const [contextMenu, setContextMenu] = useState<{ x: number, y: number } | null>(null)
+  const [showLineNumbers, setShowLineNumbers] = useState(false)
+  const [showImagePrompt, setShowImagePrompt] = useState(false)
+  const [imageUrlInput, setImageUrlInput] = useState("")
+  const [urlError, setUrlError] = useState(false)
+  const [showMenu, setShowMenu] = useState(false)
 
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       const target = e.target as Element | null;
-      if (target?.closest('.context-menu-container') || target?.closest('.emoji-picker-portal')) {
-        return;
+      if (!target?.closest('.context-menu-container') && !target?.closest('.emoji-picker-portal')) {
+        setContextMenu(null);
       }
-      setContextMenu(null);
+      if (!target?.closest('.editor-options-menu')) {
+        setShowMenu(false);
+      }
     };
     document.addEventListener('mousedown', handleClickOutside);
     return () => document.removeEventListener('mousedown', handleClickOutside);
@@ -449,14 +457,21 @@ export default function CustomEditor({ text, providerValue, setText}: Props) {
         className="hidden"
         id="custom-editor-image-input"
       />
-      <label 
-        htmlFor="custom-editor-image-input" 
-        className="bg-blue-500 text-white px-2.5 sm:px-3 py-1.5 sm:py-2 rounded cursor-pointer hover:bg-blue-600  transition text-sm sm:text-base shrink-0 dark:text-white  dark:bg-green-600 dark:hover:bg-blue-700"
-      >
-        Upload
-      </label>
+      <div className="flex gap-1.5 sm:gap-2 ml-auto items-center relative editor-options-menu">
+        <label 
+          htmlFor="custom-editor-image-input" 
+          className="bg-blue-500 text-white px-2.5 sm:px-3 py-1.5 sm:py-2 rounded cursor-pointer hover:bg-blue-600 transition text-sm sm:text-base shrink-0 dark:text-white dark:bg-green-600 dark:hover:bg-blue-700"
+        >
+          Upload
+        </label>
+   
+      </div>
     </div>
   )
+
+  function handleImageUrlSubmit(): void {
+    throw new Error("Function not implemented.")
+  }
 
   return (
     <>
@@ -658,6 +673,32 @@ export default function CustomEditor({ text, providerValue, setText}: Props) {
       background: rgba(100, 116, 139, 0.8);
     }
   }
+
+  .show-line-numbers .ProseMirror {
+    counter-reset: editor-line;
+    padding-left: 3rem !important;
+  }
+
+  .show-line-numbers .ProseMirror > * {
+    position: relative;
+    counter-increment: editor-line;
+  }
+
+  .show-line-numbers .ProseMirror > *::after {
+    content: counter(editor-line);
+    position: absolute;
+    left: -2.5rem;
+    top: 0;
+    line-height: inherit;
+    width: 1.5rem;
+    text-align: right;
+    color: #9ca3af;
+    font-size: 0.8rem;
+    user-select: none;
+    pointer-events: none;
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    opacity: 0.6;
+  }
 `}</style>
       <div className="flex items-center min-w-full justify-center px-1 sm:px-4 md:px-6 py-4 sm:py-6 md:py-8">
        
@@ -668,6 +709,12 @@ export default function CustomEditor({ text, providerValue, setText}: Props) {
               className="context-menu-container fixed z-50 flex items-center gap-1 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 shadow-lg rounded-md p-1" 
               style={{ top: contextMenu.y, left: contextMenu.x }}
             >
+              <button
+                onClick={() => { setShowLineNumbers(!showLineNumbers); setContextMenu(null); }}
+                className={`px-2 py-1 text-sm font-medium rounded transition-colors whitespace-nowrap ${showLineNumbers ? 'bg-gray-200 dark:bg-gray-700 text-black dark:text-white' : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'}`}
+              >
+                {showLineNumbers ? 'Hide Lines' : 'Show Lines'}
+              </button>
               <button
                 onClick={() => { editor.chain().focus().toggleHeading({ level: 1 }).run(); setContextMenu(null); }}
                 className={`px-2 py-1 text-sm font-medium rounded transition-colors ${editor.isActive('heading', { level: 1 }) ? 'bg-gray-200 dark:bg-gray-700 text-black dark:text-white' : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300'}`}
@@ -690,13 +737,13 @@ export default function CustomEditor({ text, providerValue, setText}: Props) {
             </div>
           )}
           <div 
-            className="custom-editor-content custom-scrollbar overflow-y-auto text-black dark:text-white min-h-50 max-h-[70vh] min-w-60vh sm:min-h-[300px] md:min-h-[400px] p-3 sm:p-4 md:p-6"
+            className={`custom-editor-content custom-scrollbar overflow-y-auto text-black dark:text-white min-h-50 max-h-[70vh] min-w-60vh sm:min-h-[300px] md:min-h-[400px] p-3 sm:p-4 md:p-6 ${showLineNumbers ? 'show-line-numbers' : ''}`}
             onContextMenu={(e) => {
               e.preventDefault();
               setContextMenu({ x: e.clientX, y: e.clientY });
             }}
           >
-            <EditorContent editor={editor} />
+            <EditorContent editor={editor}/>
           </div>
         </div>
         {uploading && (
@@ -715,6 +762,30 @@ export default function CustomEditor({ text, providerValue, setText}: Props) {
             </div>
           </div>
         )}
+        <Dialog
+          header="Enter Image URL"
+          visible={showImagePrompt}
+          style={{ width: '90vw', maxWidth: '400px' }}
+          onHide={() => { setShowImagePrompt(false); setUrlError(false); setImageUrlInput(''); }}
+        >
+          <div className="flex flex-col gap-4 mt-2">
+            <div>
+              <InputText
+                value={imageUrlInput}
+                onChange={(e) => { setImageUrlInput(e.target.value); setUrlError(false); }}
+                placeholder="https://example.com/image.png"
+                autoFocus
+                onKeyDown={(e) => e.key === 'Enter' && handleImageUrlSubmit()}
+                className={`w-full ${urlError ? 'p-invalid' : ''}`}
+              />
+              {urlError && <small className="text-red-500 mt-1 block">Please enter a valid URL starting with http:// or https://</small>}
+            </div>
+            <div className="flex justify-end gap-2 mt-2">
+              <Button label="Cancel" icon="pi pi-times" onClick={() => { setShowImagePrompt(false); setUrlError(false); setImageUrlInput(''); }} className="p-button-text" />
+              <Button label="Insert" icon="pi pi-check" onClick={handleImageUrlSubmit} autoFocus />
+            </div>
+          </div>
+        </Dialog>
       </div>
     </>
   )

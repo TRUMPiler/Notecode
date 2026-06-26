@@ -1,7 +1,10 @@
+// <div class="tenor-gif-embed" data-postid="21057451" data-share-method="host" data-aspect-ratio="0.99375" data-width="100%"><a href="https://tenor.com/view/family-guy-crane-gif-21057451">Family Guy GIF</a>from <a href="https://tenor.com/search/family-gifs">Family GIFs</a></div> <script type="text/javascript" async src="https://tenor.com/embed.js"></script>
+
 import express from 'express'
 import cors from 'cors'
 import cookieParser from 'cookie-parser'
 import dotenv from 'dotenv'
+dotenv.config()
 import path from 'path'
 import userRoutes from './routes/userRoutes'
 import ApiResponse from './utils/ApiResponse'
@@ -10,16 +13,15 @@ import { errorHandler } from './middleware/errorHandler'
 import uploadRoutes from './routes/uploadRoutes'
 import notesRoutes from './routes/notesRoutes'
 import { WebSocketServer, WebSocket } from 'ws';
-import UserModel from './models/userModel'
-import { authenticate } from './middleware/authMiddleware'
+
 
 
 
 dotenv.config()
 
 const app = express()
-const port = process.env.PORT || 5000
-const wss = new WebSocketServer({ port: 6060 });
+const port = process.env.PORT || 6066
+const wss = new WebSocketServer({ port: 6067 });
 
 
 
@@ -87,7 +89,7 @@ wss.on("connection", (ws, req) => {
     if (room) {
       room.delete(ws);
       // Clean up the room if it's empty
-      if (room.size === 0) {
+      if (room.size === 0) {  
         noteRooms.delete(noteId);
       }
     }

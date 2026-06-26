@@ -5,13 +5,14 @@ import { authenticate } from '../middleware/authMiddleware'
 const router = Router()
 
 router.use(authenticate)
-console.log('Notes routes initialized with authentication middleware');
-router.post('/', createNote)
-router.get('/', getNotes)
+
+router.get('/titles', getNotesTitle)
 router.get('/:id', getNote)
 router.put('/:id', updateNote)
 router.delete('/:id', deleteNote)
 router.post('/:id/share', shareNote)
-router.get('/titles', getNotesTitle)
+router.post('/', createNote)
+router.get('/', getNotes)
+
 
 export default router

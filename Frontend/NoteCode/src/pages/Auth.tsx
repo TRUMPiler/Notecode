@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { useAuth } from '../context/AuthContext'
 import '../styles/auth.scss'
+import GoogleOAuth from '../components/googleOAuth/googleOAuth'
+import { useDispatch } from 'react-redux'
+import { setUser, logout } from '../context/authSlice'
 
 interface LoginFormData {
   email: string
@@ -17,7 +19,7 @@ interface SignupFormData {
 
 export default function Auth() {
   const navigate = useNavigate()
-  const { setUser, logout } = useAuth()
+  const dispatch = useDispatch()
   const [isLogin, setIsLogin] = useState(true)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -69,7 +71,7 @@ export default function Auth() {
       if (response.ok && data.data?.user) {
         setSuccess('Login successful!')
         const userData = data.data.user
-        setUser(userData)
+        dispatch(setUser(userData))
         localStorage.setItem('user', JSON.stringify(userData))
         console.log('Login successful:', data)
         // Redirect to editor if there is a draft, otherwise home
@@ -125,7 +127,7 @@ export default function Auth() {
         const userData = data?.data?.user
         if (userData) {
           setSuccess('Signup successful! Redirecting...')
-          setUser(userData)
+          dispatch(setUser(userData))
           localStorage.setItem('user', JSON.stringify(userData))
           setSignupForm({ name: '', email: '', password: '', confirmPassword: '' })
           const hasDraft = localStorage.getItem('draftNote')
@@ -149,12 +151,16 @@ export default function Auth() {
   const handleLogout = async () => {
     setLoading(true)
     try {
-      await logout()
+      await fetch(`${BACKEND_URL}/user/logout`, {
+        method: 'POST',
+        credentials: 'include'
+      })
+      dispatch(logout())
+      localStorage.removeItem('user')
       setSuccess('')
       setError('')
       setLoginForm({ email: '', password: '' })
       setSignupForm({ name: '', email: '', password: '', confirmPassword: '' })
-      setUser(null)
       navigate('/')
     } catch (err) {
       setError('Logout failed')
@@ -162,13 +168,12 @@ export default function Auth() {
       setLoading(false)
     }
   }
-  
 
   return (
     <div className="auth-container">
       <div className="auth-card">
         <div className="auth-header">
-          <h1>NoteCode</h1>
+          <h1>NoteCenter</h1>
           <p>Your coding notebook</p>
         </div>
 
@@ -197,11 +202,15 @@ export default function Auth() {
 
         {error && <div className="alert alert-error">{error}</div>}
         {success && <div className="alert alert-success">{success}</div>}
-
+           <div className="flex flex-col items-center gap-4 mb-4">
+            <GoogleOAuth />
+            <h1>OR</h1>
+          </div>
         <form
           className={`auth-form ${isLogin ? 'show' : 'hide'}`}
           onSubmit={handleLoginSubmit}
         >
+
           <div className="form-group">
             <label htmlFor="login-email">Email</label>
             <input
@@ -239,7 +248,7 @@ export default function Auth() {
           </button>
 
           <div className="form-footer">
-            <a href="#forgot">Forgot password?</a>
+            <a href="/forgot-password">Forgot password?</a>
           </div>
         </form>
 

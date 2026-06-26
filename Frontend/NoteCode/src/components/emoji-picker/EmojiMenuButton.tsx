@@ -22,8 +22,8 @@ export default function EmojiMenuButton({ editor }: EmojiMenuButtonProps) {
         onClick={() => setIsOpen(true)}
         className="px-2 py-1 text-sm font-medium rounded transition-colors hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-700 dark:text-gray-300 flex items-center gap-1"
       >
-        <span>😀</span>
-        <span>Emoji</span>
+        <span  title="Add Emoji!😃">😀</span>
+        {/* <span>Emoji</span> */}
       </button>
       
       <EmojiPicker isOpen={isOpen} onClose={() => setIsOpen(false)} onSelect={handleSelect} buttonRef={buttonRef} />

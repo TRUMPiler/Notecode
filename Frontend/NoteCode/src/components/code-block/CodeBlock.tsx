@@ -53,7 +53,7 @@ const CodeBlock: React.FC<CodeBlockProps> = ({
 
   // Handle Run button click
   const BACKEND = (import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000').replace(/\/$/, '')
-  const CODE_RUNNER = ( 'http://localhost:5000').replace(/\/$/, '')
+  const CODE_RUNNER = (import.meta.env.VITE_CODE_RUNNER_URL).replace(/\/$/, '')
 
   const handleRun = useCallback(async () => {
     setShowOutput(true)
@@ -127,7 +127,7 @@ const CodeBlock: React.FC<CodeBlockProps> = ({
     if (e.key === 'Tab') {
       e.preventDefault()
       const now = Date.now()
-      const threshold = 400
+      const threshold = 200
       const last = (lastTabTimeRef.current || 0)
       if (now - last <= threshold) {
         // double tab: exit editing and notify parent to create paragraph
@@ -255,14 +255,14 @@ const CodeBlock: React.FC<CodeBlockProps> = ({
               <>
                 <div className="code-block-output-section">
                   <div className="code-block-output-label">stdout</div>
-                  <pre><code>{outputStdout}</code></pre>
+                  <pre><code><br/>{outputStdout}</code></pre>
                 </div>
               </>
             ) : null}
             {outputStderr ? (
               <div className="code-block-output-section">
                 <div className="code-block-output-label">stderr</div>
-                <pre className="stderr"><code>{outputStderr}</code></pre>
+                <pre className="stderr"><code><br/>{outputStderr}</code></pre>
               </div>
             ) : null}
             {(exitCode !== null || durationSeconds !== null) && (

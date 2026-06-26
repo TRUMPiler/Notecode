@@ -5,7 +5,7 @@ export const connectMongoDB = async () => {
   if (mongoUrl) {
     try {
       mongoose.set('strictQuery', false)
-      await mongoose.connect(mongoUrl)
+      await mongoose.connect(mongoUrl);
       console.log('Connected to MongoDB')
     } catch (err) {
       console.error('Failed to connect to MongoDB:', err)

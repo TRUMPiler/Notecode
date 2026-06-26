@@ -32,8 +32,9 @@ export const createNote = async (payload: NotePayload) => {
 
 export const getNotes = async (filter: any = {}) => {
   try {
+    
     return await NoteModel.find(filter as any).sort({ createdAt: -1 })
-  } catch (err: any) {
+      } catch (err: any) {
     throw new AppError('Failed to fetch notes', 500, err?.message || err)
   }
 }
@@ -95,18 +96,21 @@ export const shareNote = async (noteId: string, email: string, role: 'editor' | 
 }
 
 export const GetNotesTitle = async ( email: string) => {
+  console.log('GetNotesTitle called with email:', email);
+  
   try {
-    console.log('GetNotesTitle called with email:', email);
+
+    
     const user = await userService.findUserByEmail(email)
     if (!user) throw new AppError('User not found with this email', 404)
 
     let listOfNotes = await NoteOwnerModel.find({ owner: user._id } as any)
-    const notesTitles=listOfNotes.map((noteOwner) => {
-      return NoteModel.findById(noteOwner.noteId).select('title')
-    }
-  );
-  console.log('✅ Successfully fetched notes titles from DB:', notesTitles)
-    return notesTitles
+    const notesTitles=listOfNotes.map(async (noteOwner) => {
+      return await NoteModel.findById(noteOwner.noteId)
+    });
+    const resolvedNotesTitles = await Promise.all(notesTitles);
+  console.log('✅ Successfully fetched notes titles from DB:', resolvedNotesTitles)
+    return resolvedNotesTitles
   } catch (err: any) {
     if (err?.name === 'AppError' || err?.status) throw err
     throw new AppError('Failed to get notes', 500, err?.message || err)

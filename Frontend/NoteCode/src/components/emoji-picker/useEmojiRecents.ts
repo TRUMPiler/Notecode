@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-const STORAGE_KEY = 'notecode:emoji_recents';
+const STORAGE_KEY = 'NoteCenter:emoji_recents';
 const MAX_RECENTS = 8;
 
 export function useEmojiRecents() {

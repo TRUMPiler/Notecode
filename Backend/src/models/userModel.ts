@@ -7,15 +7,21 @@ export interface IUser extends Document {
   createdAt: Date
   updatedAt: Date
   profilePictureUrl?: string
+  isGoogleUser?: boolean
+  passwordResetToken?: string
+  passwordResetExpires?: Date
 }
-
 const UserSchema: Schema = new Schema(
   {
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true, index: true },
     password: { type: String, required: true },
     profilePictureUrl: { type: String },
+    isGoogleUser: { type: Boolean, default: false },
+    passwordResetToken: { type: String },
+    passwordResetExpires: { type: Date },
   },
+
   { timestamps: true }
 )
 

@@ -40,6 +40,63 @@ export const login = async (req: Request, res: Response) => {
   }
 }
 
+export const googleLogin = async (req: Request, res: Response) => {
+  try {
+    const { code } = req.body as { code: string };
+    if (!code) {
+      return ApiResponse.error(res, 'Authorization code is required', 400);
+    }
+
+    // 1. Authenticate or register the user via the service
+    const user = await userService.loginWithGoogle(code);
+
+    // 2. Create session tokens and cookies
+    const refreshToken = signRefresh({ email: user.email });
+    const tempToken = signTemp({ email: user.email });
+
+    res.cookie('refresh_token', refreshToken, cookieOptions(7 * 24 * 60 * 60 * 1000));
+    res.cookie('temp_jwt', tempToken, cookieOptions(15 * 60 * 1000));
+
+    // 3. Send success response, matching the frontend's expectation
+    return ApiResponse.success(res, { user: { email: user.email, name: user.name, id: user._id, profilePictureUrl: user.profilePictureUrl } }, 'Login successful', 200);
+  } catch (err: any) {
+    console.error('Google login error', err);
+    if (err?.status) return ApiResponse.error(res, err.message || 'Error', err.status, err.details);
+    return ApiResponse.error(res, 'Google login failed', 500);
+  }
+}
+
+export const forgotPassword = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    if (!email) {
+      return ApiResponse.error(res, 'Email is required', 400);
+    }
+    await userService.generatePasswordResetToken(email);
+    // Always return a success message to prevent email enumeration
+    return ApiResponse.success(res, null, 'If a user with that email exists, a reset link has been sent.', 200);
+  } catch (err: any) {
+    console.error('Forgot password error', err);
+    if (err?.status) return ApiResponse.error(res, err.message || 'Error', err.status, err.details);
+    return ApiResponse.error(res, 'Server error', 500);
+  }
+};
+
+export const resetPassword = async (req: Request, res: Response) => {
+  try {
+    const { token, password } = req.body;
+    if (!token || !password) {
+      return ApiResponse.error(res, 'Token and new password are required', 400);
+    }
+    await userService.resetPassword(token, password);
+    return ApiResponse.success(res, null, 'Password has been reset successfully.', 200);
+  } catch (err: any) {
+    console.error('Reset password error', err);
+    if (err?.status) return ApiResponse.error(res, err.message || 'Error', err.status, err.details);
+    return ApiResponse.error(res, 'Server error', 500);
+  }
+};
+
 export const register = async (req: Request, res: Response) => {
   try {
     const { name, email, password } = req.body as Partial<User>
