@@ -101,58 +101,61 @@ const Navbar = () => {
           <p className="text-3xl text-black dark:text-white cursor-pointer" onClick={() => navigate('/')}> NoteCenter</p>
         </div>
 
-        <ul className="flex flex-row space-x-4 items-center">
-          <li>
-            <a href="/" className="text-black dark:text-white hover:text-blue-900 dark:hover:text-blue-300 transition-colors duration-200">
-              Home
-            </a>
-          </li>
-          {!isLoggedIn ? (
-            <>
-              <li>
-                {/* <button
+        {/* Conditionally render nav items based on screen size */}
+        {!isMobile && (
+          <ul className="flex flex-row space-x-4 items-center">
+            <li>
+              <a href="/" className="text-black dark:text-white hover:text-blue-900 dark:hover:text-blue-300 transition-colors duration-200">
+                Home
+              </a>
+            </li>
+            {!isLoggedIn ? (
+              <>
+                <li>
+                  {/* <button
                 onClick={() => navigate('/auth')}
                 className="px-4 py-2  text-white rounded-lg "
               >
                 Login
               </button> */}
-              </li>
-              <li>
-                <button
-                  onClick={() => navigate('/auth')}
-                  className="px-4 py-2 bg-black dark:bg-orange-400 dark:text-white text-white rounded-4xl hover:bg-green-800 hover:scale-105 transition-all duration-200"
-                >
-                  Register Now!
-                </button>
-              </li>
-            </>
-          ) : (
-            <>
-              <Avatar size='lg' className="cursor-pointer hover:opacity-80 transition-opacity" onClick={() => document.getElementById('profilePicInput')?.click()} title="Change Profile Picture">
-                <AvatarImage
-                  src={user?.profilePictureUrl || "https://github.com/shadcn.png"}
-                  alt={user?.name || "User"}
+                </li>
+                <li>
+                  <button
+                    onClick={() => navigate('/auth')}
+                    className="px-4 py-2 bg-black dark:bg-orange-400 dark:text-white text-white rounded-4xl hover:bg-green-800 hover:scale-105 transition-all duration-200"
+                  >
+                    Register Now!
+                  </button>
+                </li>
+              </>
+            ) : (
+              <>
+                <Avatar size='lg' className="cursor-pointer hover:opacity-80 transition-opacity" onClick={() => document.getElementById('profilePicInput')?.click()} title="Change Profile Picture">
+                  <AvatarImage
+                    src={user?.profilePictureUrl || "https://github.com/shadcn.png"}
+                    alt={user?.name || "User"}
+                  />
+                  <AvatarFallback>{user?.name?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
+                </Avatar>
+                <input
+                  type="file"
+                  id="profilePicInput"
+                  className="hidden"
+                  accept="image/*"
+                  onChange={handleProfilePicUpload}
                 />
-                <AvatarFallback>{user?.name?.charAt(0).toUpperCase() || 'U'}</AvatarFallback>
-              </Avatar>
-              <input
-                type="file"
-                id="profilePicInput"
-                className="hidden"
-                accept="image/*"
-                onChange={handleProfilePicUpload}
-              />
-              <li>
-                <button
-                  onClick={handleLogout}
-                  className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                >
-                  Logout
-                </button>
-              </li>
-            </>
-          )}
-        </ul>
+                <li>
+                  <button
+                    onClick={handleLogout}
+                    className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                  >
+                    Logout
+                  </button>
+                </li>
+              </>
+            )}
+          </ul>
+        )}
       </nav>
     </>
   )
